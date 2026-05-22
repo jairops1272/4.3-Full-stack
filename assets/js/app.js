@@ -3,7 +3,7 @@
  * Controlador principal de ContactosApp — OOP + ES Modules
  */
 
-import { ApiService }    from './api.js';
+import { ApiService }    from './api2.js';
 import { Modal }         from './modal.js';
 import { Toast }         from './toast.js';
 import { Validator }     from './validator.js';
