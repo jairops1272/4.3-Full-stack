@@ -2,9 +2,6 @@
  * assets/js/api.js
  * ─────────────────────────────────────────────────────────────
  * Servicio HTTP que consume la API REST del back-end.
- *
- * ⚠️  CAMBIA BASE_URL por la URL real de tu API en Hostinger.
- *     Ejemplo: 'https://tudominio.com/api'
  */
 
 export class ApiService {
@@ -28,6 +25,12 @@ static BASE_URL = 'https://contactos-app.jairopineda.io';
       if (res.status === 204) return null;
       const body = await res.json();
       if (!res.ok) throw new ApiError(body?.message ?? body?.error ?? `HTTP ${res.status}`, res.status);
+      
+      // ✅ IMPORTANTE: Si la respuesta tiene {success: true, data: [...]}, extraemos data
+      if (body.success === true && body.data !== undefined) {
+        return body.data;
+      }
+      
       return body;
     } catch (e) {
       if (e instanceof ApiError) throw e;
