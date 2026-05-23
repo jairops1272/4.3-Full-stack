@@ -77,9 +77,34 @@ class ContactosApp {
   async #load() {
     this.#table.showLoading();
     try {
+      console.log('🔵 App.load() iniciando...');
       const res = await ApiService.getAll();
-      this.#table.load(res);
+      console.log('🔵 Respuesta de ApiService.getAll():', res);
+      console.log('🔵 Tipo de respuesta:', typeof res);
+      console.log('🔵 ¿Es array?', Array.isArray(res));
+      
+      // Extraer los contactos correctamente
+      let contacts = [];
+      if (Array.isArray(res)) {
+        contacts = res;
+        console.log('🔵 Es array directamente, contactos:', contacts.length);
+      } else if (res && typeof res === 'object') {
+        if (Array.isArray(res.data)) {
+          contacts = res.data;
+          console.log('🔵 Extrayendo data de res.data, contactos:', contacts.length);
+        } else if (Array.isArray(res.contacts)) {
+          contacts = res.contacts;
+          console.log('🔵 Extrayendo contacts de res.contacts, contactos:', contacts.length);
+        } else {
+          console.log('🔵 res es objeto pero no tiene data ni contacts, keys:', Object.keys(res));
+          contacts = [];
+        }
+      }
+      
+      console.log('🔵 Contactos finales a cargar en tabla:', contacts.length);
+      this.#table.load(contacts);
     } catch (e) {
+      console.error('🔴 Error en load:', e);
       this.#table.showError(e.message);
       Toast.error(e.message);
     }
