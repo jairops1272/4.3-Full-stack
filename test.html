@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test API</title></head>
+<body>
+<h1>Test API Contactos</h1>
+<pre id="result">Cargando...</pre>
+<script>
+fetch('https://contactos-app.jairopineda.io/contactos')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('result').innerHTML = JSON.stringify(data, null, 2);
+  })
+  .catch(err => {
+    document.getElementById('result').innerHTML = 'Error: ' + err.message;
+  });
+</script>
+</body>
+</html>
