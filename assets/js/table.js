@@ -26,11 +26,18 @@ export class ContactsTable {
     this.#tbody      = document.getElementById('tbl-body');
     this.#countEl    = document.getElementById('stat-count');
     this.#footInfoEl = document.getElementById('foot-info');
+    console.log('🟢 ContactsTable constructor - tbody encontrado:', !!this.#tbody);
   }
 
   /** Carga datos y renderiza */
   load(rows) {
+    console.log('🟢 table.load() recibido:', rows);
+    console.log('🟢 ¿Es array?', Array.isArray(rows));
+    console.log('🟢 rows?.data?', rows?.data);
+    
     this.#data = Array.isArray(rows) ? rows : (rows?.data ?? []);
+    console.log('🟢 Datos procesados, cantidad:', this.#data.length);
+    
     this.render();
     if (this.#countEl) this.#countEl.textContent = this.#data.length;
   }
@@ -46,20 +53,24 @@ export class ContactsTable {
   }
 
   showLoading() {
+    console.log('🟢 showLoading()');
     this.#tbody.innerHTML = `<tr><td colspan="5"><div class="t-state">
       <div class="spinner-ring"></div><p class="t-state-msg">Cargando contactos…</p>
-    </div></td></tr>`;
+    </div></td></td>`;
   }
 
   showError(msg) {
+    console.log('🟢 showError():', msg);
     this.#tbody.innerHTML = `<tr><td colspan="5"><div class="t-state">
       <div class="t-state-icon">⚠</div><p class="t-state-msg">${this.#esc(msg)}</p>
     </div></td></tr>`;
   }
 
   render() {
+    console.log('🟢 render() - data.length:', this.#data.length);
     const filtered = this.#applyFilter();
     const sorted   = this.#applySort(filtered);
+    console.log('🟢 filtered.length:', filtered.length, 'sorted.length:', sorted.length);
 
     if (!sorted.length) {
       const msg = this.#query
@@ -68,11 +79,12 @@ export class ContactsTable {
       this.#tbody.innerHTML = `<tr><td colspan="5"><div class="t-state">
         <div class="t-state-icon" style="color:var(--text-3)">◎</div>
         <p class="t-state-msg">${msg}</p>
-      </div></td></tr>`;
+      </div></td></td>`;
       this.#setFootInfo(0, this.#data.length);
       return;
     }
 
+    console.log('🟢 Renderizando', sorted.length, 'filas');
     this.#tbody.innerHTML = sorted.map((c, i) => this.#row(c, i)).join('');
     this.#setFootInfo(sorted.length, this.#data.length);
 
@@ -134,7 +146,7 @@ export class ContactsTable {
             <button class="btn-row btn-row-delete" data-act="del"  data-id="${c.id}" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
           </div>
         </td>
-      </tr>`;
+      </table>`;
   }
 
   #setFootInfo(shown, total) {
