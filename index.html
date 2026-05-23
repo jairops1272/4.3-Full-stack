@@ -146,7 +146,7 @@
                 <div class="spinner-ring"></div>
                 <p class="t-state-msg">Cargando contactos…</p>
               </div>
-            </td</tr>
+            </td></tr>
           </tbody>
         </table>
       </div>
@@ -316,15 +316,22 @@
 <!-- ═══════════════════════════════════════════════════════
      SCRIPTS
 ═══════════════════════════════════════════════════════ -->
-<!-- Bootstrap JS (sin integrity) -->
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- App principal como módulo con carga robusta -->
+<!-- App principal con carga asíncrona -->
 <script type="module">
   console.log('🟢 Iniciando aplicación...');
-  import('./assets/js/app.js').then(module => {
+  
+  try {
+    const module = await import('./assets/js/app.js');
     console.log('✅ App.js cargado correctamente');
-  }).catch(err => {
+    
+    // Pequeño delay para asegurar que todo se inicialice
+    setTimeout(() => {
+      console.log('🟢 Verificando carga de contactos...');
+    }, 1000);
+  } catch (err) {
     console.error('❌ Error cargando app.js:', err);
     document.getElementById('tbl-body').innerHTML = `
       <tr><td colspan="5">
@@ -334,7 +341,7 @@
         </div>
       </td></tr>
     `;
-  });
+  }
 </script>
 
 <!-- Footer año -->
