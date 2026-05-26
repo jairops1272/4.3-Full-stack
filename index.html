@@ -10,7 +10,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
 
-  <!-- Bootstrap 5 (sin integrity para evitar errores) -->
+  <!-- Bootstrap 5 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 
   <!-- Font Awesome 6 -->
@@ -23,20 +23,16 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════
-     NAVBAR
-═══════════════════════════════════════════════════════ -->
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="container">
     <div class="navbar-inner">
-
       <a href="#" class="nav-brand">
         <div class="nav-brand-icon">
           <i class="fa-solid fa-address-book"></i>
         </div>
         <span class="nav-brand-name">Contactos<em>App</em></span>
       </a>
-
       <div class="nav-right">
         <div class="nav-pill">
           <div class="nav-pill-dot"></div>
@@ -51,19 +47,13 @@
           <span>Nuevo contacto</span>
         </button>
       </div>
-
     </div>
   </div>
 </nav>
 
-
-<!-- ═══════════════════════════════════════════════════════
-     MAIN
-═══════════════════════════════════════════════════════ -->
+<!-- MAIN -->
 <main class="main">
   <div class="container">
-
-    <!-- Page header -->
     <div class="page-head">
       <div class="page-head-top">
         <div>
@@ -72,8 +62,6 @@
           <p class="page-desc">CRUD completo conectado a la API REST</p>
         </div>
       </div>
-
-      <!-- Stats -->
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-icon stat-icon--cyan">
@@ -103,9 +91,8 @@
           </div>
         </div>
       </div>
-    </div><!-- /page-head -->
+    </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
       <div class="search-box">
         <i class="search-box-icon fa-solid fa-magnifying-glass"></i>
@@ -122,7 +109,6 @@
       </button>
     </div>
 
-    <!-- Table -->
     <div class="table-wrap">
       <div class="table-scroll">
         <table class="data-table">
@@ -146,11 +132,11 @@
                 <div class="spinner-ring"></div>
                 <p class="t-state-msg">Cargando contactos…</p>
               </div>
-            </td></tr>
+            </td
+            </tr>
           </tbody>
         </table>
       </div>
-
       <div class="table-foot">
         <span class="table-foot-info" id="foot-info"></span>
         <span class="table-foot-rt">
@@ -158,28 +144,21 @@
           Actualización en tiempo real
         </span>
       </div>
-    </div><!-- /table-wrap -->
-
+    </div>
   </div>
 </main>
 
-
-<!-- ═══════════════════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════════════════ -->
+<!-- FOOTER -->
 <footer class="footer">
   <div class="container">
     <div class="footer-inner">
-
       <div class="footer-brand">Contactos<em>App</em></div>
-
       <div class="footer-dev">
         Desarrollado por <strong>Jairo Pineda Sanchez</strong> &nbsp;·&nbsp;
         Materia: <strong>Programación Web</strong> &nbsp;·&nbsp;
         Maestro: <strong>M.C. Víctor Manuel Pinedo Fernández</strong> &nbsp;·&nbsp;
         <span id="footer-year"></span>
       </div>
-
       <div class="footer-links">
         <a href="https://github.com/jairops1272" target="_blank" rel="noopener">
           <i class="fa-brands fa-github"></i> GitHub
@@ -188,18 +167,13 @@
           <i class="fa-solid fa-envelope"></i> Email
         </a>
       </div>
-
     </div>
   </div>
 </footer>
 
-
-<!-- ═══════════════════════════════════════════════════════
-     MODAL — Formulario Agregar / Editar
-═══════════════════════════════════════════════════════ -->
+<!-- MODALES (igual que antes) -->
 <div id="modal-form" class="modal-backdrop" role="dialog" aria-modal="true">
   <div class="modal">
-
     <div class="modal-head">
       <div class="modal-head-left">
         <div id="modal-form-icon" class="modal-head-icon mhi-cyan">
@@ -207,26 +181,22 @@
         </div>
         <div>
           <div id="modal-form-title" class="modal-title">Nuevo Contacto</div>
-          <div id="modal-form-sub"   class="modal-subtitle">Completa los datos</div>
+          <div id="modal-form-sub" class="modal-subtitle">Completa los datos</div>
         </div>
       </div>
       <button class="btn-close-modal" data-close aria-label="Cerrar">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
-
     <div class="modal-body">
       <form id="contact-form" novalidate>
-
         <div class="form-grid">
-          <!-- Nombre -->
           <div class="field">
             <label class="field-label" for="f-nombre">Nombre <span class="req">*</span></label>
             <input id="f-nombre" name="nombre" class="field-input" type="text"
               placeholder="ej. Juan" maxlength="80" autocomplete="given-name" />
             <div class="field-error" data-err="nombre"></div>
           </div>
-          <!-- Apellido -->
           <div class="field">
             <label class="field-label" for="f-apellido">Apellido <span class="req">*</span></label>
             <input id="f-apellido" name="apellido" class="field-input" type="text"
@@ -234,26 +204,20 @@
             <div class="field-error" data-err="apellido"></div>
           </div>
         </div>
-
-        <!-- Email -->
         <div class="field">
           <label class="field-label" for="f-email">Correo electrónico <span class="req">*</span></label>
           <input id="f-email" name="email" class="field-input" type="email"
             placeholder="ej. juan.garcia@email.com" maxlength="120" autocomplete="email" />
           <div class="field-error" data-err="email"></div>
         </div>
-
-        <!-- Teléfono -->
         <div class="field">
           <label class="field-label" for="f-tel">Teléfono <span class="req">*</span></label>
           <input id="f-tel" name="telefono" class="field-input" type="tel"
             placeholder="ej. +52 55 1234 5678" maxlength="20" autocomplete="tel" />
           <div class="field-error" data-err="telefono"></div>
         </div>
-
       </form>
     </div>
-
     <div class="modal-foot">
       <button class="btn btn-cancel" data-close>
         <i class="fa-solid fa-xmark"></i> Cancelar
@@ -262,17 +226,11 @@
         <i class="fa-solid fa-plus btn-icon"></i> Agregar
       </button>
     </div>
-
   </div>
-</div><!-- /modal-form -->
+</div>
 
-
-<!-- ═══════════════════════════════════════════════════════
-     MODAL — Confirmar Eliminación
-═══════════════════════════════════════════════════════ -->
 <div id="modal-confirm" class="modal-backdrop" role="alertdialog" aria-modal="true">
   <div class="modal modal--sm">
-
     <div class="modal-head">
       <div class="modal-head-left">
         <div class="modal-head-icon mhi-rose">
@@ -287,7 +245,6 @@
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
-
     <div class="confirm-center">
       <div class="confirm-ring">
         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -299,7 +256,6 @@
         Esta acción no se puede deshacer.
       </p>
     </div>
-
     <div class="modal-foot" style="justify-content:space-between">
       <button class="btn btn-cancel" data-close>
         <i class="fa-solid fa-arrow-left"></i> Cancelar
@@ -308,43 +264,15 @@
         <i class="fa-solid fa-trash-can btn-icon"></i> Sí, eliminar
       </button>
     </div>
-
   </div>
-</div><!-- /modal-confirm -->
-
+</div>
 
 <!-- ═══════════════════════════════════════════════════════
-     SCRIPTS
+     SCRIPTS - VERSIÓN SIMPLE (SIN MÓDULOS)
 ═══════════════════════════════════════════════════════ -->
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/app-simple.js"></script>
 
-<!-- App principal con carga asíncrona -->
-<script type="module">
-  console.log('🟢 Iniciando aplicación...');
-  
-  try {
-    const module = await import('./assets/js/app.js');
-    console.log('✅ App.js cargado correctamente');
-    
-    // Pequeño delay para asegurar que todo se inicialice
-    setTimeout(() => {
-      console.log('🟢 Verificando carga de contactos...');
-    }, 1000);
-  } catch (err) {
-    console.error('❌ Error cargando app.js:', err);
-    document.getElementById('tbl-body').innerHTML = `
-      <tr><td colspan="5">
-        <div class="t-state">
-          <div class="t-state-icon">⚠️</div>
-          <p class="t-state-msg">Error al cargar la aplicación: ${err.message}</p>
-        </div>
-      </td></tr>
-    `;
-  }
-</script>
-
-<!-- Footer año -->
 <script>
   document.getElementById('footer-year').textContent = new Date().getFullYear();
 </script>
