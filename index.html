@@ -1,281 +1,163 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Gestión de contactos — CRUD con API REST y MySQL en Hostinger" />
-
-  <title>ContactosApp — Gestión de Contactos</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
-
-  <!-- Bootstrap 5 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-
-  <!-- Font Awesome 6 -->
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    crossorigin="anonymous" />
-
-  <!-- Estilos propios -->
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta charset="UTF-8">
+  <title>ContactosApp - Versión Simple</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f5f5f5; padding: 20px; }
+    .container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    table { margin-top: 20px; }
+    th { background: #007bff; color: white; cursor: pointer; }
+    .loading { text-align: center; padding: 50px; }
+  </style>
 </head>
 <body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="container">
-    <div class="navbar-inner">
-      <a href="#" class="nav-brand">
-        <div class="nav-brand-icon">
-          <i class="fa-solid fa-address-book"></i>
-        </div>
-        <span class="nav-brand-name">Contactos<em>App</em></span>
-      </a>
-      <div class="nav-right">
-        <div class="nav-pill">
-          <div class="nav-pill-dot"></div>
-          API activa
-        </div>
-        <button id="btn-reload" class="btn btn-ghost" title="Recargar datos">
-          <i class="fa-solid fa-rotate-right"></i>
-          <span class="d-none d-md-inline">Recargar</span>
-        </button>
-        <button class="btn btn-primary" data-action="new">
-          <i class="fa-solid fa-plus"></i>
-          <span>Nuevo contacto</span>
-        </button>
-      </div>
+<div class="container">
+  <h1 class="text-center my-4">📇 ContactosApp</h1>
+  <p class="text-center text-muted">CRUD completo conectado a API REST - MySQL Hostinger</p>
+  
+  <div class="row mb-3">
+    <div class="col">
+      <button id="btnReload" class="btn btn-primary">🔄 Recargar</button>
+      <button id="btnNew" class="btn btn-success">➕ Nuevo Contacto</button>
+    </div>
+    <div class="col">
+      <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar contacto...">
     </div>
   </div>
-</nav>
-
-<!-- MAIN -->
-<main class="main">
-  <div class="container">
-    <div class="page-head">
-      <div class="page-head-top">
-        <div>
-          <div class="page-eyebrow">Base de datos MySQL — Hostinger</div>
-          <h1 class="page-title">Gestión de <span>Contactos</span></h1>
-          <p class="page-desc">CRUD completo conectado a la API REST</p>
-        </div>
-      </div>
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon stat-icon--cyan">
-            <i class="fa-solid fa-users"></i>
-          </div>
-          <div>
-            <div class="stat-value" id="stat-count">—</div>
-            <div class="stat-label">Contactos</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon stat-icon--violet">
-            <i class="fa-solid fa-database"></i>
-          </div>
-          <div>
-            <div class="stat-value">MySQL</div>
-            <div class="stat-label">Motor de BD</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon stat-icon--emerald">
-            <i class="fa-solid fa-plug"></i>
-          </div>
-          <div>
-            <div class="stat-value">REST</div>
-            <div class="stat-label">Arquitectura</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <div class="search-box">
-        <i class="search-box-icon fa-solid fa-magnifying-glass"></i>
-        <input
-          id="search-input"
-          class="search-input"
-          type="search"
-          placeholder="Buscar por nombre, email o teléfono…"
-          autocomplete="off"
-        />
-      </div>
-      <button id="btn-clear" class="btn btn-ghost" title="Limpiar">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div class="table-wrap">
-      <div class="table-scroll">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th data-sort="nombre">
-                <span class="th-inner">Contacto <i class="sort-icon fa-solid fa-sort"></i></span>
-              </th>
-              <th data-sort="email">
-                <span class="th-inner">Email <i class="sort-icon fa-solid fa-sort"></i></span>
-              </th>
-              <th data-sort="telefono">
-                <span class="th-inner">Teléfono <i class="sort-icon fa-solid fa-sort"></i></span>
-              </th>
-              <th style="width:96px">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbl-body">
-            <tr><td colspan="5">
-              <div class="t-state">
-                <div class="spinner-ring"></div>
-                <p class="t-state-msg">Cargando contactos…</p>
-              </div>
-            </td
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="table-foot">
-        <span class="table-foot-info" id="foot-info"></span>
-        <span class="table-foot-rt">
-          <i class="fa-solid fa-circle" style="font-size:.45rem;color:var(--emerald)"></i>
-          Actualización en tiempo real
-        </span>
-      </div>
-    </div>
+  
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Contacto</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="contactosTable">
+        <tr><td colspan="4" class="loading">Cargando contactos...</td></tr>
+      </tbody>
+    </table>
   </div>
-</main>
-
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-brand">Contactos<em>App</em></div>
-      <div class="footer-dev">
-        Desarrollado por <strong>Jairo Pineda Sanchez</strong> &nbsp;·&nbsp;
-        Materia: <strong>Programación Web</strong> &nbsp;·&nbsp;
-        Maestro: <strong>M.C. Víctor Manuel Pinedo Fernández</strong> &nbsp;·&nbsp;
-        <span id="footer-year"></span>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/jairops1272" target="_blank" rel="noopener">
-          <i class="fa-brands fa-github"></i> GitHub
-        </a>
-        <a href="mailto:jops1272@gmail.com">
-          <i class="fa-solid fa-envelope"></i> Email
-        </a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<!-- MODALES (igual que antes) -->
-<div id="modal-form" class="modal-backdrop" role="dialog" aria-modal="true">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-head-left">
-        <div id="modal-form-icon" class="modal-head-icon mhi-cyan">
-          <i class="fa-solid fa-user-plus"></i>
-        </div>
-        <div>
-          <div id="modal-form-title" class="modal-title">Nuevo Contacto</div>
-          <div id="modal-form-sub" class="modal-subtitle">Completa los datos</div>
-        </div>
-      </div>
-      <button class="btn-close-modal" data-close aria-label="Cerrar">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div class="modal-body">
-      <form id="contact-form" novalidate>
-        <div class="form-grid">
-          <div class="field">
-            <label class="field-label" for="f-nombre">Nombre <span class="req">*</span></label>
-            <input id="f-nombre" name="nombre" class="field-input" type="text"
-              placeholder="ej. Juan" maxlength="80" autocomplete="given-name" />
-            <div class="field-error" data-err="nombre"></div>
-          </div>
-          <div class="field">
-            <label class="field-label" for="f-apellido">Apellido <span class="req">*</span></label>
-            <input id="f-apellido" name="apellido" class="field-input" type="text"
-              placeholder="ej. García" maxlength="80" autocomplete="family-name" />
-            <div class="field-error" data-err="apellido"></div>
-          </div>
-        </div>
-        <div class="field">
-          <label class="field-label" for="f-email">Correo electrónico <span class="req">*</span></label>
-          <input id="f-email" name="email" class="field-input" type="email"
-            placeholder="ej. juan.garcia@email.com" maxlength="120" autocomplete="email" />
-          <div class="field-error" data-err="email"></div>
-        </div>
-        <div class="field">
-          <label class="field-label" for="f-tel">Teléfono <span class="req">*</span></label>
-          <input id="f-tel" name="telefono" class="field-input" type="tel"
-            placeholder="ej. +52 55 1234 5678" maxlength="20" autocomplete="tel" />
-          <div class="field-error" data-err="telefono"></div>
-        </div>
-      </form>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-cancel" data-close>
-        <i class="fa-solid fa-xmark"></i> Cancelar
-      </button>
-      <button id="btn-save" class="btn btn-primary">
-        <i class="fa-solid fa-plus btn-icon"></i> Agregar
-      </button>
-    </div>
-  </div>
+  
+  <div id="totalContactos" class="text-center text-muted mt-3"></div>
 </div>
-
-<div id="modal-confirm" class="modal-backdrop" role="alertdialog" aria-modal="true">
-  <div class="modal modal--sm">
-    <div class="modal-head">
-      <div class="modal-head-left">
-        <div class="modal-head-icon mhi-rose">
-          <i class="fa-solid fa-trash-can"></i>
-        </div>
-        <div>
-          <div class="modal-title">Eliminar contacto</div>
-          <div class="modal-subtitle">Acción permanente e irreversible</div>
-        </div>
-      </div>
-      <button class="btn-close-modal" data-close aria-label="Cerrar">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div class="confirm-center">
-      <div class="confirm-ring">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-      </div>
-      <h3 class="confirm-heading">¿Eliminar este contacto?</h3>
-      <p class="confirm-desc">
-        Estás a punto de eliminar a
-        <strong id="del-name">este contacto</strong>.
-        Esta acción no se puede deshacer.
-      </p>
-    </div>
-    <div class="modal-foot" style="justify-content:space-between">
-      <button class="btn btn-cancel" data-close>
-        <i class="fa-solid fa-arrow-left"></i> Cancelar
-      </button>
-      <button id="btn-do-delete" class="btn btn-danger">
-        <i class="fa-solid fa-trash-can btn-icon"></i> Sí, eliminar
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════
-     SCRIPTS - VERSIÓN SIMPLE (SIN MÓDULOS)
-═══════════════════════════════════════════════════════ -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/app-simple.js"></script>
 
 <script>
-  document.getElementById('footer-year').textContent = new Date().getFullYear();
+  const API_URL = 'https://contactos-app.jairopineda.io';
+  
+  async function cargarContactos() {
+    const tbody = document.getElementById('contactosTable');
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">Cargando...</td></tr>';
+    
+    try {
+      console.log('🔵 Llamando a:', `${API_URL}/contactos`);
+      const response = await fetch(`${API_URL}/contactos`);
+      const data = await response.json();
+      console.log('🟢 Respuesta:', data);
+      
+      if (data.success && data.data && data.data.length > 0) {
+        let html = '';
+        for (const c of data.data) {
+          html += `
+            <tr>
+              <td><strong>${c.nombre || ''} ${c.apellido || ''}</strong></td>
+              <td>${c.email || ''}</td>
+              <td>${c.telefono || ''}</td>
+              <td>
+                <button class="btn btn-sm btn-warning me-1" onclick="editarContacto(${c.id})">✏️ Editar</button>
+                <button class="btn btn-sm btn-danger" onclick="eliminarContacto(${c.id})">🗑️ Eliminar</button>
+              </td>
+            </tr>
+          `;
+        }
+        tbody.innerHTML = html;
+        document.getElementById('totalContactos').innerHTML = `Total: ${data.data.length} contactos`;
+        console.log('✅ Tabla actualizada con', data.data.length, 'contactos');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4">No hay contactos disponibles</td></tr>';
+      }
+    } catch (error) {
+      console.error('❌ Error:', error);
+      tbody.innerHTML = `<tr><td colspan="4">Error: ${error.message}</td></tr>`;
+    }
+  }
+  
+  async function editarContacto(id) {
+    try {
+      const response = await fetch(`${API_URL}/contactos/${id}`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        const c = data.data;
+        const nombre = prompt('Nuevo nombre:', c.nombre);
+        const apellido = prompt('Nuevo apellido:', c.apellido);
+        const email = prompt('Nuevo email:', c.email);
+        const telefono = prompt('Nuevo teléfono:', c.telefono);
+        
+        if (nombre && apellido && email && telefono) {
+          const updateResponse = await fetch(`${API_URL}/contactos/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, apellido, email, telefono })
+          });
+          const result = await updateResponse.json();
+          if (result.success) {
+            alert('Contacto actualizado');
+            cargarContactos();
+          }
+        }
+      }
+    } catch (error) {
+      alert('Error al editar');
+    }
+  }
+  
+  async function eliminarContacto(id) {
+    if (confirm('¿Eliminar este contacto?')) {
+      try {
+        const response = await fetch(`${API_URL}/contactos/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (data.success) {
+          alert('Contacto eliminado');
+          cargarContactos();
+        }
+      } catch (error) {
+        alert('Error al eliminar');
+      }
+    }
+  }
+  
+  window.editarContacto = editarContacto;
+  window.eliminarContacto = eliminarContacto;
+  
+  document.getElementById('btnReload').addEventListener('click', cargarContactos);
+  document.getElementById('btnNew').addEventListener('click', () => {
+    const nombre = prompt('Nombre:');
+    const apellido = prompt('Apellido:');
+    const email = prompt('Email:');
+    const telefono = prompt('Teléfono:');
+    if (nombre && apellido && email && telefono) {
+      fetch(`${API_URL}/contactos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, apellido, email, telefono })
+      }).then(() => cargarContactos());
+    }
+  });
+  
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#contactosTable tr');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(term) ? '' : 'none';
+    });
+  });
+  
+  cargarContactos();
 </script>
-
 </body>
 </html>
