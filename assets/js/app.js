@@ -1,9 +1,10 @@
-// Versión definitiva - 2025
-import { ApiService } from './api2.js';
+// Versión SIMPLE - Sin módulos
+console.log('🚀 App Simple cargada');
 
-console.log('🚀 App.js cargado - Versión Definitiva');
+// Configuración
+const API_URL = 'https://contactos-app.jairopineda.io';
 
-// Función principal
+// Función para cargar contactos
 async function cargarContactos() {
   console.log('🟢 Cargando contactos...');
   
@@ -15,98 +16,89 @@ async function cargarContactos() {
     return;
   }
   
-  // Mostrar loading
-  tbody.innerHTML = `<tr><td colspan="4"><div class="text-center p-4">Cargando contactos...</div></td></tr>`;
+  tbody.innerHTML = '<tr><td colspan="4"><div class="text-center p-4">Cargando contactos...</div></td></tr>';
   
   try {
-    // Llamar a la API
-    const contactos = await ApiService.getAll();
-    console.log('🟢 Contactos recibidos:', contactos);
-    console.log('🟢 Tipo:', typeof contactos);
-    console.log('🟢 ¿Es array?', Array.isArray(contactos));
-    console.log('🟢 Cantidad:', contactos?.length);
+    const response = await fetch(`${API_URL}/contactos`);
+    const data = await response.json();
+    console.log('Respuesta:', data);
     
-    // Verificar que tenemos datos
-    if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4"><div class="text-center p-4">No hay contactos disponibles</div></td></tr>`;
-      if (statCount) statCount.textContent = '0';
-      return;
-    }
-    
-    // Generar HTML de la tabla
-    let html = '';
-    for (const c of contactos) {
-      html += `
-        <tr>
-          <td>
-            <div class="d-flex align-items-center">
-              <div class="avatar-circle me-2" style="width:40px;height:40px;background:#0d6efd;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center">
-                ${(c.nombre?.charAt(0) || '?')}${(c.apellido?.charAt(0) || '')}
+    if (data.success && data.data && data.data.length > 0) {
+      let html = '';
+      for (const c of data.data) {
+        html += `
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar-circle me-2" style="width:40px;height:40px;background:#0d6efd;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center">
+                  ${(c.nombre?.charAt(0) || '?')}${(c.apellido?.charAt(0) || '')}
+                </div>
+                <div>
+                  <strong>${c.nombre || ''} ${c.apellido || ''}</strong>
+                </div>
               </div>
-              <div>
-                <strong>${c.nombre || ''} ${c.apellido || ''}</strong>
-              </div>
-            </div>
-          </td>
-          <td>${c.email || ''}</td>
-          <td>${c.telefono || ''}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-primary me-1" onclick="editarContacto(${c.id})">✏️</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="eliminarContacto(${c.id})">🗑️</button>
-          </td>
-        </tr>
-      `;
+            </td>
+            <td>${c.email || ''}</td>
+            <td>${c.telefono || ''}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1" onclick="editarContacto(${c.id})">✏️</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="eliminarContacto(${c.id})">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = html;
+      if (statCount) statCount.textContent = data.data.length;
+      console.log('✅ Tabla actualizada con', data.data.length, 'contactos');
+    } else {
+      tbody.innerHTML = '<tr><td colspan="4"><div class="text-center p-4">No hay contactos</div></td></tr>';
     }
-    
-    tbody.innerHTML = html;
-    if (statCount) statCount.textContent = contactos.length;
-    console.log('✅ Tabla actualizada con', contactos.length, 'contactos');
-    
   } catch (error) {
-    console.error('❌ Error cargando contactos:', error);
+    console.error('❌ Error:', error);
     tbody.innerHTML = `<tr><td colspan="4"><div class="text-center p-4 text-danger">Error: ${error.message}</div></td></tr>`;
   }
 }
 
-// Funciones globales para los botones
+// Editar contacto
 window.editarContacto = async (id) => {
-  console.log('Editar contacto:', id);
+  console.log('Editar:', id);
   try {
-    const contacto = await ApiService.getOne(id);
-    console.log('Contacto a editar:', contacto);
-    alert(`Editar: ${contacto.nombre} ${contacto.apellido}`);
+    const response = await fetch(`${API_URL}/contactos/${id}`);
+    const data = await response.json();
+    if (data.success && data.data) {
+      alert(`Editar: ${data.data.nombre} ${data.data.apellido}\nEmail: ${data.data.email}\nTeléfono: ${data.data.telefono}`);
+    }
   } catch (error) {
-    console.error('Error al editar:', error);
     alert('Error al cargar el contacto');
   }
 };
 
+// Eliminar contacto
 window.eliminarContacto = async (id) => {
-  console.log('Eliminar contacto:', id);
   if (confirm('¿Estás seguro de eliminar este contacto?')) {
     try {
-      await ApiService.remove(id);
-      alert('Contacto eliminado correctamente');
-      cargarContactos(); // Recargar la lista
+      const response = await fetch(`${API_URL}/contactos/${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (data.success) {
+        alert('Contacto eliminado');
+        cargarContactos();
+      }
     } catch (error) {
-      console.error('Error al eliminar:', error);
-      alert('Error al eliminar el contacto');
+      alert('Error al eliminar');
     }
   }
 };
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🟢 DOM listo, inicializando...');
+  console.log('🟢 DOM listo');
   cargarContactos();
   
-  // Configurar botón de recarga
+  // Botón recargar
   const btnReload = document.getElementById('btn-reload');
-  if (btnReload) {
-    btnReload.addEventListener('click', cargarContactos);
-  }
+  if (btnReload) btnReload.addEventListener('click', cargarContactos);
   
-  // Configurar búsqueda
+  // Búsqueda
   const searchInput = document.getElementById('search-input');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
