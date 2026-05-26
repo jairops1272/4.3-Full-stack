@@ -1,78 +1,51 @@
-/**
- * assets/js/api.js
- * ─────────────────────────────────────────────────────────────
- * Servicio HTTP que consume la API REST del back-end.
- */
-
-console.log('🟢 API SERVICE CARGADO - VERSION 2026.05.22 FINAL');
-
 export class ApiService {
+  static BASE_URL = 'https://contactos-app.jairopineda.io';
 
-static BASE_URL = 'https://contactos-app.jairopineda.io';
-
-  static #headers = {
-    'Content-Type': 'application/json',
-    'Accept'      : 'application/json',
-  };
-
-  /**
-   * Método privado genérico de petición HTTP.
-   * @param {string} path    - ruta relativa, ej: '/contactos'
-   * @param {RequestInit} op - opciones de fetch
-   */
-  static async #req(path, op = {}) {
-    const url = `${this.BASE_URL}${path}`;
-    console.log(`📡 [API] Llamando a: ${url}`);
-    
+  static async getAll() {
     try {
-      const res  = await fetch(url, { ...op, headers: { ...this.#headers, ...(op.headers ?? {}) } });
-      console.log(`📡 [API] Respuesta status: ${res.status}`);
+      const response = await fetch(`${this.BASE_URL}/contactos`);
+      const data = await response.json();
+      console.log('API getAll response:', data);
       
-      if (res.status === 204) return null;
-      const body = await res.json();
-      console.log(`📡 [API] Respuesta body:`, body);
-      
-      if (!res.ok) throw new ApiError(body?.message ?? body?.error ?? `HTTP ${res.status}`, res.status);
-      
-      // ✅ IMPORTANTE: Si la respuesta tiene {success: true, data: [...]}, extraemos data
-      if (body.success === true && body.data !== undefined) {
-        console.log(`📡 [API] Extrayendo data, contactos encontrados: ${body.data.length}`);
-        return body.data;
+      // La API devuelve {success: true, data: [...]}
+      if (data.success && Array.isArray(data.data)) {
+        return data.data;
       }
-      
-      return body;
-    } catch (e) {
-      console.error(`📡 [API] Error:`, e);
-      if (e instanceof ApiError) throw e;
-      throw new ApiError('Sin conexión con el servidor. Verifica la URL de la API.', 0);
+      return [];
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
     }
   }
 
-  // ── CRUD ──────────────────────────────────────────────────────
-
-  /** GET /contactos */
-  static getAll() { 
-    console.log('📡 [API] getAll() llamado');
-    return this.#req('/contactos'); 
+  static async getOne(id) {
+    const response = await fetch(`${this.BASE_URL}/contactos/${id}`);
+    const data = await response.json();
+    return data.success ? data.data : data;
   }
 
-  /** GET /contactos/:id */
-  static getOne(id) { return this.#req(`/contactos/${id}`); }
+  static async create(data) {
+    const response = await fetch(`${this.BASE_URL}/contactos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return await response.json();
+  }
 
-  /** POST /contactos */
-  static create(data) { return this.#req('/contactos', { method: 'POST', body: JSON.stringify(data) }); }
+  static async update(id, data) {
+    const response = await fetch(`${this.BASE_URL}/contactos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return await response.json();
+  }
 
-  /** PUT /contactos/:id */
-  static update(id, data) { return this.#req(`/contactos/${id}`, { method: 'PUT', body: JSON.stringify(data) }); }
-
-  /** DELETE /contactos/:id */
-  static remove(id) { return this.#req(`/contactos/${id}`, { method: 'DELETE' }); }
-}
-
-export class ApiError extends Error {
-  constructor(message, status = 0) {
-    super(message);
-    this.name   = 'ApiError';
-    this.status = status;
+  static async remove(id) {
+    const response = await fetch(`${this.BASE_URL}/contactos/${id}`, {
+      method: 'DELETE'
+    });
+    return await response.json();
   }
 }
